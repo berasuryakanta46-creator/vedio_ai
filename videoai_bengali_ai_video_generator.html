@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoAI - এআই ভিডিও জেনারেটর</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Bengali (Hind Siliguri) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            accent: '#a855f7',
+                            neon: '#00f2fe'
+                        }
+                    },
+                    fontFamily: {
+                        bengali: ['"Hind Siliguri"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(99, 102, 241, 0.3));
+            padding: 1px;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Custom Animated Background Grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-purple-500 selection:text-white bg-grid">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid font-bold fa-wand-magic-sparkles text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-wide">ভিডিও<span class="gradient-text">এআই</span></span>
+                </div>
+
+                <!-- Desktop Nav Navigation -->
+                <nav class="hidden md:flex items-center space-x-8 text-base font-medium">
+                    <a href="#features" class="hover:text-purple-400 transition-colors">ফিচারসমূহ</a>
+                    <a href="#demo" class="hover:text-purple-400 transition-colors">লাইভ ডেমো</a>
+                    <a href="#pricing" class="hover:text-purple-400 transition-colors">প্রাইসিং</a>
+                    <a href="#faq" class="hover:text-purple-400 transition-colors">প্রশ্নাবলী</a>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="px-4 py-2 text-slate-300 hover:text-white transition">লগ ইন</button>
+                    <a href="#demo" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition duration-200">
+                        ফ্রি শুরু করুন
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn" class="text-slate-300 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-6 space-y-3">
+            <a href="#features" class="block py-2 text-slate-300 hover:text-purple-400 font-medium">ফিচারসমূহ</a>
+            <a href="#demo" class="block py-2 text-slate-300 hover:text-purple-400 font-medium">লাইভ ডেমো</a>
+            <a href="#pricing" class="block py-2 text-slate-300 hover:text-purple-400 font-medium">প্রাইসিং</a>
+            <a href="#faq" class="block py-2 text-slate-300 hover:text-purple-400 font-medium">প্রশ্নাবলী</a>
+            <div class="pt-4 border-t border-slate-800 flex flex-col space-y-2">
+                <button class="w-full py-2 text-slate-300 hover:text-white text-center">লগ ইন</button>
+                <a href="#demo" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium text-center">
+                    ফ্রি শুরু করুন
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
+            <!-- Background Glow Effects -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none pulse-glow"></div>
+            <div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                <!-- Top Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/80 border border-slate-800 text-purple-400 text-sm mb-8 backdrop-blur-sm shadow-inner">
+                    <span class="flex h-2 w-2 rounded-full bg-purple-400 animate-ping"></span>
+                    <span class="font-medium">নেক্সট-জেন এআই ভিডিও জেনারেশন ৩.০</span>
+                </div>
+
+                <!-- Hero Heading -->
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-tight sm:leading-tight md:leading-tight mb-6">
+                    আপনার ভাবনাকে রূপ দিন <br class="hidden sm:inline" />
+                    <span class="gradient-text">সিনেম্যাটিক এআই ভিডিওতে</span>
+                </h1>
+
+                <!-- Hero Subtitle -->
+                <p class="max-w-3xl mx-auto text-lg sm:text-xl text-slate-400 mb-10 font-normal leading-relaxed">
+                    শুধুমাত্র একটি টেক্সট প্রম্পট লিখুন অথবা ছবি আপলোড করুন। আমাদের উন্নত এআই সিস্টেম মুহূর্তের মধ্যে তৈরি করবে এইচডি কোয়ালিটি স্টানিং ভিডিও ও অ্যানিমেশন।
+                </p>
+
+                <!-- Hero CTAs -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                    <a href="#demo" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-lg shadow-lg shadow-purple-500/25 transition duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-play"></i>
+                        ফ্রি ডেমো চেষ্টা করুন
+                    </a>
+                    <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold text-lg transition duration-300 flex items-center justify-center gap-2">
+                        ফিচারসমূহ দেখুন
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+
+                <!-- Video Preview Hero Frame -->
+                <div class="max-w-5xl mx-auto rounded-2xl overflow-hidden p-1.5 bg-gradient-to-b from-purple-500/30 via-slate-800/40 to-slate-900/80 shadow-2xl backdrop-blur-xl">
+                    <div class="relative bg-slate-950 rounded-xl overflow-hidden aspect-video group">
+                        <!-- Canvas Animation / Placeholder for Video -->
+                        <canvas id="heroCanvas" class="w-full h-full object-cover"></canvas>
+                        
+                        <!-- Overlay Glass Effect Controls -->
+                        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div class="p-4 rounded-full bg-purple-600/80 text-white backdrop-blur-md shadow-lg transform scale-90 group-hover:scale-100 transition duration-300">
+                                <i class="fa-solid fa-play text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <!-- Top Floating Badge -->
+                        <div class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-sparkles text-purple-400"></i>
+                            <span>AI Generated Sample (4K Cinematic)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid Section -->
+        <section id="features" class="py-20 bg-slate-900/50 border-y border-slate-800/80 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                        ভিডিও তৈরির সম্পূর্ণ <span class="gradient-text">স্মার্ট সমাধান</span>
+                    </h2>
+                    <p class="text-slate-400 text-lg">
+                        কনটেন্ট ক্রিয়েটর, মার্কেটার এবং ফিল্মমেকারদের জন্য সেরা সব এআই ফিচার এক জায়গায়।
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 hover:border-purple-500/50 transition duration-300 hover:shadow-xl hover:shadow-purple-500/5 group">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition duration-300">
+                            <i class="fa-solid fa-font"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">টেক্সট টু ভিডিও</h3>
+                        <p class="text-slate-400 leading-relaxed text-sm">
+                            শুধুমাত্র আপনার কল্পনার বিবরণ বাংলায় বা ইংরেজিতে লিখুন। এআই স্বয়ংক্রিয়ভাবে তৈরি করবে প্রাণবন্ত হাই-কোয়ালিটি ভিডিও।
+                        </p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 hover:border-indigo-500/50 transition duration-300 hover:shadow-xl hover:shadow-indigo-500/5 group">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-indigo-600 group-hover:text-white transition duration-300">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">ইমেজ টু ভিডিও</h3>
+                        <p class="text-slate-400 leading-relaxed text-sm">
+                            যেকোনো স্থির ছবি বা পোর্ট্রেট আপলোড করুন। এআই তাতে যুক্ত করবে প্রাকৃতিক মোশন, ক্যামেরা প্যান ও অ্যানিমেশন।
+                        </p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 hover:border-pink-500/50 transition duration-300 hover:shadow-xl hover:shadow-pink-500/5 group">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-pink-600 group-hover:text-white transition duration-300">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">এআই স্ক্রিপ্ট রাইটার</h3>
+                        <p class="text-slate-400 leading-relaxed text-sm">
+                            ইউটিউব, টিকটক কিংবা বিজ্ঞাপনের জন্য নিখুঁত স্ক্রিপ্ট জেনারেট করুন অটোমেটিক স্টোরি বোর্ডিং সহ।
+                        </p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 hover:border-cyan-500/50 transition duration-300 hover:shadow-xl hover:shadow-cyan-500/5 group">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-cyan-600 group-hover:text-white transition duration-300">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">ভয়েসওভার ইন্টিগ্রেশন</h3>
+                        <p class="text-slate-400 leading-relaxed text-sm">
+                            ন্যাচারাল বাংলা ও অন্যান্য ভাষার পুরুষ/নারী কণ্ঠে পেশাদার ভয়েসওভার যুক্ত করুন সরাসরি ভিডিওতে।
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive AI Generator Demo Simulator -->
+        <section id="demo" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-purple-400 font-semibold text-sm tracking-widest uppercase">ইন-ব্রাউজার ডেমো</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4">
+                        নিজে পরীক্ষা করে দেখুন <span class="gradient-text">এআই জেনারেটর</span>
+                    </h2>
+                    <p class="text-slate-400">
+                        নিচের বক্সে প্রম্পট দিন এবং পছন্দমত স্টাইল সিলেক্ট করে দেখুন কিভাবে কাজ করে আমাদের এআই।
+                    </p>
+                </div>
+
+                <div class="max-w-4xl mx-auto bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-xl">
+                    <div class="space-y-6">
+                        <!-- Prompt Input Box -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">আপনার প্রম্পট লিখুন (Prompt)</label>
+                            <div class="relative">
+                                <textarea id="promptInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 transition duration-200 resize-none" placeholder="যেমন: একটি সাইবারপাঙ্ক শহরের রাতে বৃষ্টিতে হেঁটে যাওয়া রোবটের ড্রোন শট..."></textarea>
+                                <button id="samplePromptBtn" class="absolute bottom-3 right-3 text-xs bg-slate-800 hover:bg-slate-700 text-purple-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                                    <i class="fa-solid fa-wand-magic"></i> স্যাম্পল প্রম্পট
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Style Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">ভিডিও স্টাইল বেছে নিন (Art Style)</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <button class="style-btn active border-purple-500 bg-purple-500/10 text-white border p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition" data-style="cinematic">
+                                    <i class="fa-solid fa-clapperboard text-purple-400"></i> সিনেম্যাটিক
+                                </button>
+                                <button class="style-btn border-slate-800 bg-slate-950 hover:border-slate-700 text-slate-300 border p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition" data-style="anime">
+                                    <i class="fa-solid fa-dragon text-pink-400"></i> অ্যানিমে
+                                </button>
+                                <button class="style-btn border-slate-800 bg-slate-950 hover:border-slate-700 text-slate-300 border p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition" data-style="3d">
+                                    <i class="fa-solid fa-cube text-cyan-400"></i> ৩ডি রেন্ডার
+                                </button>
+                                <button class="style-btn border-slate-800 bg-slate-950 hover:border-slate-700 text-slate-300 border p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition" data-style="realism">
+                                    <i class="fa-solid fa-camera text-emerald-400"></i> রিয়েলিজম
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button id="generateBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-lg shadow-lg shadow-indigo-500/20 transition duration-300 flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-sparkles"></i>
+                            ভিডিও তৈরি করুন (Generate Video)
+                        </button>
+
+                        <!-- Video Result Output Box -->
+                        <div class="mt-8 border border-slate-800 rounded-2xl bg-slate-950 overflow-hidden relative min-h-[300px] flex items-center justify-center">
+                            
+                            <!-- Initial Idle State -->
+                            <div id="idleState" class="text-center p-8">
+                                <div class="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 text-slate-500 flex items-center justify-center text-2xl mx-auto mb-4">
+                                    <i class="fa-solid fa-video"></i>
+                                </div>
+                                <p class="text-slate-400 font-medium">উপরে প্রম্পট লিখে 'ভিডিও তৈরি করুন' বাটনে ক্লিক করুন</p>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div id="loadingState" class="hidden text-center p-8 w-full max-w-xs">
+                                <div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <p class="text-purple-400 font-semibold text-lg mb-2">ভিডিও রেন্ডার হচ্ছে...</p>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="progressBar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full w-0 transition-all duration-300"></div>
+                                </div>
+                                <span id="progressText" class="text-xs text-slate-500 mt-2 block">০% সম্পন্ন</span>
+                            </div>
+
+                            <!-- Generated Video / Animation Preview -->
+                            <div id="resultState" class="hidden w-full h-full relative group">
+                                <canvas id="demoCanvas" class="w-full h-[360px] object-cover"></canvas>
+                                <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-xl">
+                                    <div class="flex items-center gap-3">
+                                        <button id="playPauseBtn" class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center">
+                                            <i class="fa-solid fa-pause text-xs"></i>
+                                        </button>
+                                        <span class="text-xs text-slate-300 font-mono">00:05 / 4K UHD</span>
+                                    </div>
+                                    <button onclick="alert('ডাউনলোড ফিচার ডেমোতে সীমাবদ্ধ।')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+                                        <i class="fa-solid fa-download"></i> ডাউনলোড
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-20 bg-slate-900/40 border-t border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                        সহজ এবং সাশ্রয়ী <span class="gradient-text">প্রাইসিং প্ল্যান</span>
+                    </h2>
+                    <p class="text-slate-400">
+                        আপনার প্রয়োজন অনুযায়ী সেরা প্ল্যান বেছে নিন। কোনো গোপন চার্জ নেই।
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Free Plan -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-slate-700 transition">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">ফ্রি (Free)</h3>
+                            <p class="text-slate-400 text-sm mb-6">এআই ভিডিও ট্রায়াল করার জন্য</p>
+                            <div class="mb-6">
+                                <span class="text-4xl font-extrabold">৳০</span>
+                                <span class="text-slate-500">/আজীবন</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-slate-300 mb-8">
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ১০ টি ভিডিও ক্রেডিট/মাস
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ৭২০p রেজোলিউশন এক্সপোর্ট
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> স্ট্যান্ডার্ড জেনারেশন স্পিড
+                                </li>
+                                <li class="flex items-center gap-3 text-slate-500">
+                                    <i class="fa-solid fa-xmark"></i> ওয়াটারমার্ক ছাড়া ডাউনলোড
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition">
+                            ফ্রি শুরু করুন
+                        </button>
+                    </div>
+
+                    <!-- Pro Plan (Featured) -->
+                    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-purple-500 rounded-3xl p-8 flex flex-col justify-between relative shadow-2xl shadow-purple-500/10">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-md">
+                            সর্বাধিক জনপ্রিয়
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">প্রো (Pro)</h3>
+                            <p class="text-slate-400 text-sm mb-6">পেশাদার ক্রিয়েটরদের জন্য</p>
+                            <div class="mb-6">
+                                <span class="text-4xl font-extrabold">৳১,৪৯৯</span>
+                                <span class="text-slate-500">/মাস</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-slate-300 mb-8">
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ৩০০ টি ভিডিও ক্রেডিট/মাস
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ১০৮০p ও ৪K রেজোলিউশন
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> সুপারফাস্ট রেন্ডারিং
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ওয়াটারমার্ক মুক্ত
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> বাণিজ্যিক ব্যবহারের অনুমতি
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold shadow-md shadow-indigo-500/20 transition">
+                            প্রো সাবস্ক্রাইব করুন
+                        </button>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-slate-700 transition">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">এন্টারপ্রাইজ (Enterprise)</h3>
+                            <p class="text-slate-400 text-sm mb-6">টিম ও এজেন্সি ব্যবহারের জন্য</p>
+                            <div class="mb-6">
+                                <span class="text-4xl font-extrabold">৳৪,৯৯৯</span>
+                                <span class="text-slate-500">/মাস</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-slate-300 mb-8">
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> আনলিমিটেড ভিডিও ক্রেডিট
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> কাস্টম এআই মডেল ট্রেনিং
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ডেডিকেটেড এপিআই এক্সেস
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="fa-solid fa-check text-purple-400"></i> ২৪/৭ প্রিমিয়াম সাপোর্ট
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition">
+                            যোগাযোগ করুন
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-20">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold mb-4">সাধারণত জিজ্ঞাসিত <span class="gradient-text">প্রশ্নাবলী</span></h2>
+                    <p class="text-slate-400">VideoAI ব্যবহারের আগে জেনে নিন প্রয়োজনীয় তথ্য</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="border border-slate-800 rounded-2xl bg-slate-900/60 p-6">
+                        <h3 class="text-lg font-semibold mb-2">বাংলা ভাষায় কি প্রম্পট দেওয়া যাবে?</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            হ্যাঁ! আমাদের প্ল্যাটফর্মে প্রাকৃতিক বাংলা ভাষা বুঝতে সক্ষম অ্যাডভান্সড এনএলপি মডেল ব্যবহার করা হয়েছে। আপনি সরাসরি বাংলায় প্রম্পট লিখতে পারবেন।
+                        </p>
+                    </div>
+
+                    <div class="border border-slate-800 rounded-2xl bg-slate-900/60 p-6">
+                        <h3 class="text-lg font-semibold mb-2">তৈরি করা ভিডিও কি ইউটিউবে মনিটাইজ করা যাবে?</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            অবশ্যই! আমাদের প্রো এবং এন্টারপ্রাইজ প্ল্যানে তৈরি ভিডিওর ১০০% কমার্শিয়াল রাইটস বা বাণিজ্যিক অধিকার আপনার থাকবে।
+                        </p>
+                    </div>
+
+                    <div class="border border-slate-800 rounded-2xl bg-slate-900/60 p-6">
+                        <h3 class="text-lg font-semibold mb-2">একটি ভিডিও তৈরি করতে কত সময় লাগে?</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            সাধারণত ১০ থেকে ৩০ সেকেন্ডের মধ্যে আপনার প্রম্পট অনুযায়ী এইচডি ভিডিও তৈরি হয়ে যায়।
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 text-slate-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">ভিডিও<span class="gradient-text">এআই</span></span>
+                    </div>
+                    <p class="text-sm">
+                        কৃত্রিম বুদ্ধিমত্তা দিয়ে ভিডিও তৈরির ভবিষ্যৎ এখন আপনার হাতের মুঠোয়।
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">প্রোডাক্ট</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-purple-400 transition">টেক্সট টু ভিডিও</a></li>
+                        <li><a href="#features" class="hover:text-purple-400 transition">ইমেজ টু ভিডিও</a></li>
+                        <li><a href="#features" class="hover:text-purple-400 transition">ভয়েস ক্লোনিং</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">কোম্পানি</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-purple-400 transition">আমাদের সম্পর্কে</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition">ব্লগ</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition">ক্যারিয়ার</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">যোগাযোগ ও সোশ্যাল</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-purple-400 transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-purple-400 transition"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-purple-400 transition"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                    <p class="text-xs">ইমেইল: support@videoai.bd</p>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-900 pt-6 text-center text-xs text-slate-600">
+                &copy; ২০২৬ ভিডিওএআই (VideoAI)। সর্বস্বত্ব সংরক্ষিত।
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Canvas & UI Script -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hero Interactive Canvas Animation (Particle Cyberpunk Video Sim)
+        const heroCanvas = document.getElementById('heroCanvas');
+        const ctx = heroCanvas.getContext('2d');
+
+        function resizeHeroCanvas() {
+            if (!heroCanvas) return;
+            heroCanvas.width = heroCanvas.parentElement.clientWidth;
+            heroCanvas.height = heroCanvas.parentElement.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeHeroCanvas);
+        resizeHeroCanvas();
+
+        let time = 0;
+        function animateHeroCanvas() {
+            if (!heroCanvas) return;
+            ctx.fillStyle = '#050811';
+            ctx.fillRect(0, 0, heroCanvas.width, heroCanvas.height);
+
+            // Draw glowing abstract animated waves simulating a video stream
+            time += 0.02;
+            const waves = 5;
+            for (let i = 0; i < waves; i++) {
+                ctx.beginPath();
+                ctx.lineWidth = 2 + i;
+                ctx.strokeStyle = i % 2 === 0 ? `rgba(168, 85, 247, ${0.4 - i * 0.05})` : `rgba(0, 242, 254, ${0.4 - i * 0.05})`;
+
+                for (let x = 0; x < heroCanvas.width; x += 10) {
+                    const y = Math.sin(x * 0.005 + time + i) * 50 + Math.cos(time * 0.5 + i) * 20 + heroCanvas.height / 2;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            // Draw floating glowing particles
+            for (let i = 0; i < 30; i++) {
+                const px = (Math.sin(i * 99 + time * 0.5) * 0.5 + 0.5) * heroCanvas.width;
+                const py = (Math.cos(i * 33 + time * 0.3) * 0.5 + 0.5) * heroCanvas.height;
+                const size = Math.sin(time + i) * 2 + 3;
+
+                ctx.fillStyle = i % 3 === 0 ? '#00f2fe' : '#a855f7';
+                ctx.beginPath();
+                ctx.arc(px, py, Math.max(1, size), 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(animateHeroCanvas);
+        }
+
+        animateHeroCanvas();
+
+        // Sample Prompts Array
+        const samplePrompts = [
+            "একটি সুন্দর পাহাড়ি নদী যার ওপর দিয়ে সূর্যাস্তের আলো ছড়িয়ে পড়ছে, সিনেম্যাটিক শট।",
+            "ভবিষ্যতের একটি ঢাকা শহর যেখানে উড়ন্ত গাড়ি ঘুরে বেড়াচ্ছে, ৩ডি রেন্ডার।",
+            "ঘন কুয়াশাচ্ছন্ন বনের মধ্যে এক রহস্যময় রাজপ্রাসাদ, ড্রোন ভিউ।"
+        ];
+
+        const promptInput = document.getElementById('promptInput');
+        const samplePromptBtn = document.getElementById('samplePromptBtn');
+
+        samplePromptBtn.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * samplePrompts.length);
+            promptInput.value = samplePrompts[randomIndex];
+        });
+
+        // Style Selector Handling
+        const styleBtns = document.querySelectorAll('.style-btn');
+        let selectedStyle = 'cinematic';
+
+        styleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                styleBtns.forEach(b => {
+                    b.classList.remove('border-purple-500', 'bg-purple-500/10', 'text-white');
+                    b.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
+                });
+                btn.classList.removeAttribute('border-slate-800');
+                btn.classList.add('border-purple-500', 'bg-purple-500/10', 'text-white');
+                selectedStyle = btn.getAttribute('data-style');
+            });
+        });
+
+        // Generator UI State Management & Simulation
+        const generateBtn = document.getElementById('generateBtn');
+        const idleState = document.getElementById('idleState');
+        const loadingState = document.getElementById('loadingState');
+        const resultState = document.getElementById('resultState');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        let demoAnimationId = null;
+
+        generateBtn.addEventListener('click', () => {
+            if (!promptInput.value.trim()) {
+                alert('অনুগ্রহ করে একটি প্রম্পট লিখুন!');
+                return;
+            }
+
+            // Show Loading
+            idleState.classList.add('hidden');
+            resultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+
+            let progress = 0;
+            progressBar.style.width = '0%';
+            progressText.innerText = '০% সম্পন্ন';
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 10;
+                if (progress > 100) progress = 100;
+
+                progressBar.style.width = `${progress}%`;
+                progressText.innerText = `${progress}% সম্পন্ন`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingState.classList.add('hidden');
+                        resultState.classList.remove('hidden');
+                        startDemoVideoCanvas();
+                    }, 500);
+                }
+            }, 300);
+        });
+
+        // Demo Canvas Video Render Simulation
+        const demoCanvas = document.getElementById('demoCanvas');
+        const demoCtx = demoCanvas.getContext('2d');
+
+        function startDemoVideoCanvas() {
+            demoCanvas.width = demoCanvas.parentElement.clientWidth;
+            demoCanvas.height = 360;
+
+            let frame = 0;
+
+            function renderDemo() {
+                frame += 0.03;
+                demoCtx.fillStyle = '#0a0a16';
+                demoCtx.fillRect(0, 0, demoCanvas.width, demoCanvas.height);
+
+                // Render dynamic background visual based on selected style
+                if (selectedStyle === 'anime') {
+                    demoCtx.fillStyle = '#ff71ce';
+                } else if (selectedStyle === '3d') {
+                    demoCtx.fillStyle = '#05ffa1';
+                } else if (selectedStyle === 'realism') {
+                    demoCtx.fillStyle = '#00b8ff';
+                } else {
+                    demoCtx.fillStyle = '#b967ff';
+                }
+
+                // Dynamic visual grid & moving sphere simulation
+                for (let x = 0; x < demoCanvas.width; x += 40) {
+                    for (let y = 0; y < demoCanvas.height; y += 40) {
+                        const dist = Math.sin(frame + (x + y) * 0.01) * 10;
+                        demoCtx.beginPath();
+                        demoCtx.arc(x + 20, y + 20, Math.max(1, 2 + dist * 0.2), 0, Math.PI * 2);
+                        demoCtx.fill();
+                    }
+                }
+
+                // Render floating animated central object
+                const centerX = demoCanvas.width / 2 + Math.sin(frame) * 40;
+                const centerY = demoCanvas.height / 2 + Math.cos(frame * 0.8) * 20;
+
+                demoCtx.beginPath();
+                demoCtx.arc(centerX, centerY, 50 + Math.sin(frame * 2) * 10, 0, Math.PI * 2);
+                demoCtx.strokeStyle = '#ffffff';
+                demoCtx.lineWidth = 3;
+                demoCtx.stroke();
+
+                demoAnimationId = requestAnimationFrame(renderDemo);
+            }
+
+            if (demoAnimationId) cancelAnimationFrame(demoAnimationId);
+            renderDemo();
+        }
+
+        // Play/Pause Demo Toggle
+        let isPlaying = true;
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                if (demoAnimationId) cancelAnimationFrame(demoAnimationId);
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+                isPlaying = false;
+            } else {
+                startDemoVideoCanvas();
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+                isPlaying = true;
+            }
+        });
+    </script>
+</body>
+</html>
